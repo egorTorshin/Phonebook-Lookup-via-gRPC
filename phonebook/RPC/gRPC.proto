@@ -1,0 +1,30 @@
+syntax='proto3';
+
+package phonebook;
+
+service Phonebook {
+  rpc AddContact (Contact) returns (Response);
+  rpc GetContact (Name) returns (Contact);
+  rpc DeleteContact (Name) returns (Response);
+  rpc ListContacts (Empty) returns (ContactList);
+}
+
+message Contact {
+  string name = 1;
+  string number = 2;
+}
+
+message Name {
+  string name = 1;
+}
+
+message Response {
+  string status = 1;
+  string message = 2;
+}
+
+message ContactList {
+  repeated Contact contacts = 1;
+}
+
+message Empty {}
