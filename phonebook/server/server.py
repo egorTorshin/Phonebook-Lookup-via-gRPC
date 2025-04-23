@@ -16,7 +16,7 @@ DB_FILE = os.getenv("DB_FILE", "contacts.json")
 class PhonebookService(pb2_grpc.PhonebookServicer):
     def __init__(self, db_file=DB_FILE):
         self.db_file = db_file
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
         self.contacts = self._load_contacts()
 
     def _load_contacts(self):
