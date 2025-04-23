@@ -4,7 +4,6 @@ import gRPC_pb2 as pb2
 import gRPC_pb2_grpc as pb2_grpc
 from colorama import init, Fore, Style
 
-# Initialize colorama
 init(autoreset=True)
 
 class PhonebookClient:
