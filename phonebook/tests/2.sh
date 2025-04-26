@@ -7,7 +7,7 @@ python3 server.py &
 SERVER_PID=$!
 sleep 2
 
-cd ../../client
+cd ../client
 ADD_RESULT=$(python3 client.py add "TestUser" "1234567890" | grep "added")
 GET_RESULT=$(python3 client.py get "TestUser" | grep "TestUser")
 
