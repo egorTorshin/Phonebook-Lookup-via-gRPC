@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   run-autograding-tests:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
     - name: Checkout code
