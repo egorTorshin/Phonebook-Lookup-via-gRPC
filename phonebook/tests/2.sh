@@ -1,1 +1,22 @@
-test
+#!/bin/bash
+# tests/test_add_get_contact.sh
+echo "=== Тест добавления и получения контакта ==="
+
+cd ../server
+python3 server.py &
+SERVER_PID=$!
+sleep 2
+
+cd ../../client
+ADD_RESULT=$(python3 client.py add "TestUser" "1234567890" | grep "added")
+GET_RESULT=$(python3 client.py get "TestUser" | grep "TestUser")
+
+if [[ $ADD_RESULT && $GET_RESULT ]]; then
+    echo -e "\033[32mТест пройден\033[0m"
+    kill $SERVER_PID
+    exit 0
+else
+    echo -e "\033[31mТест не пройден\033[0m"
+    kill $SERVER_PID
+    exit 1
+fi
