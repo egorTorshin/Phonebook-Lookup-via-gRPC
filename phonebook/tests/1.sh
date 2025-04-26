@@ -1,25 +1,17 @@
 #!/bin/bash
+# tests/test_server_start.sh
+echo "=== Тест запуска сервера ==="
 
-PROTO_FILE="gRPC.proto"
-SERVER_FILE="server.py"
-
-echo "[1/3] Compiling $PROTO_FILE..."
-python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. "$PROTO_FILE" || {
-    echo "❌ Failed to compile proto file."
-    exit 1
-}
-
-echo "[2/3] Starting server in background..."
-python3 "$SERVER_FILE" &
+cd ../server
+python3 server.py &
 SERVER_PID=$!
 sleep 2
 
-echo "[3/3] Checking if server is running..."
 if ps -p $SERVER_PID > /dev/null; then
-    echo "✅ Server is running (PID: $SERVER_PID)"
+    echo -e "\033[32mСервер успешно запущен\033[0m"
     kill $SERVER_PID
     exit 0
 else
-    echo "❌ Server failed to start or crashed."
+    echo -e "\033[31mОшибка запуска сервера\033[0m"
     exit 1
 fi
