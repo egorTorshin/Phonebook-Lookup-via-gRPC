@@ -8,8 +8,8 @@ SERVER_PID=$!
 sleep 2
 
 cd ../client
-ADD_RESULT=$(python3 client.py add "TestUser" "1234567890" | grep "added")
-GET_RESULT=$(python3 client.py get "TestUser" | grep "TestUser")
+ADD_RESULT=$(python3 client.py --command "add TestUser 1234567890")
+GET_RESULT=$(python3 client.py --command "get TestUser 1234567890")
 
 if [[ $ADD_RESULT && $GET_RESULT ]]; then
     echo -e "\033[32mТест пройден\033[0m"
