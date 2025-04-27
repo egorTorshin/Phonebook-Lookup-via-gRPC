@@ -1,7 +1,7 @@
 #!/bin/bash
-
-SERVER_FILE="phonebook/server/server.py"
-CLIENT_FILE="phonebook/client/client.py"
+cd phonebook
+SERVER_FILE="server/server.py"
+CLIENT_FILE="client/client.py"
 
 # Cleanup on exit
 cleanup() {
