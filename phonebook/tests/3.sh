@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd ../server
 SERVER_FILE="server.py"
 CLIENT_FILE="client.py"
 
@@ -19,6 +19,7 @@ SERVER_PID=$!
 sleep 2
 fi
 
+cd ../client
 # Run both clients
 echo "[2/5] add test user..."
 python3 "$CLIENT_FILE" --add TestUser 1 &
