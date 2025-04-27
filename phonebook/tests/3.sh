@@ -22,17 +22,17 @@ sleep 2
 cd ../client
 # Run both clients
 echo "[2/5] add test user..."
-python3 "$CLIENT_FILE" --add TestUser 1 &
+python3 "$CLIENT_FILE" localhost:50051 --add  TestUser 1 &
 CLIENT1_PID=$!
 
 sleep 2
 
 echo "[3/5] get test user..."
-python3 "$CLIENT_FILE" --get TestUser &
+python3 "$CLIENT_FILE" localhost:50051 --get TestUser &
 CLIENT2_PID=$!
 
 echo "[4/5] list users..."
-python3 "$CLIENT_FILE" --list &
+python3 "$CLIENT_FILE" localhost:50051 --list &
 CLIENT2_PID=$!
 
 # Wait for both clients to complete
