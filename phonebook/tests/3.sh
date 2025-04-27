@@ -1,7 +1,7 @@
 #!/bin/bash
 cd ../server
 SERVER_FILE="server.py"
-CLIENT_FILE="client.py"
+CLIENT_FILE="../client/client.py"
 
 # Cleanup on exit
 cleanup() {
@@ -16,35 +16,35 @@ trap cleanup EXIT
 echo "[1/5] Starting server..."
 python3 "$SERVER_FILE" &
 SERVER_PID=$!
-sleep 2
-
+sleep 5  # Увеличил время ожидания для gRPC сервера
 
 cd ../client
-# Run both clients
-echo "[2/5] add test user..."
-python3 "$CLIENT_FILE" & 
-#python3 -c 
-> add TestUser 1 &
-CLIENT1_PID=$!
+# Тестирование
+echo "[2/5] Adding test user..."
+python3 "$CLIENT_FILE" --command "add TestUser 1"
+if [ $? -ne 0 ]; then
+    echo "Failed to add contact"
+    exit 1
+fi
 
-sleep 2
+sleep 1
 
-echo "[3/5] get test user..."
-python3 "$CLIENT_FILE" &
-#python3 -c 
-> get TestUser &
-CLIENT2_PID=$!
+echo "[3/5] Getting test user..."
+python3 "$CLIENT_FILE" --command "get TestUser"
+if [ $? -ne 0 ]; then
+    echo "Failed to get contact"
+    exit 1
+fi
 
-echo "[4/5] list users..."
-python3 "$CLIENT_FILE" &
-#python3 -c 
-> list &
-CLIENT2_PID=$!
+sleep 1
 
-# Wait for both clients to complete
-wait $CLIENT1_PID
-wait $CLIENT2_PID
-wait $CLIENT3_PID
+echo "[4/5] Listing users..."
+python3 "$CLIENT_FILE" --command "list"
+if [ $? -ne 0 ]; then
+    echo "Failed to list contacts"
+    exit 1
+fi
 
+sleep 1
 
-echo "[5/5] Clients completed. Test successful."
+echo "[5/5] Test completed successfully"
