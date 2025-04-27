@@ -21,7 +21,8 @@ sleep 5  # Увеличил время ожидания для gRPC сервер
 cd ../client
 # Тестирование
 echo "[2/5] Adding test user..."
-python3 "$CLIENT_FILE" --command "add TestUser 1"
+python3 "$CLIENT_FILE" &
+--command "add TestUser 1"
 if [ $? -ne 0 ]; then
     echo "Failed to add contact"
     exit 1
@@ -39,7 +40,8 @@ fi
 sleep 1
 
 echo "[4/5] Listing users..."
-python3 "$CLIENT_FILE" --command "list"
+python3 "$CLIENT_FILE:" 
+--command "list"
 if [ $? -ne 0 ]; then
     echo "Failed to list contacts"
     exit 1
