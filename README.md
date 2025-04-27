@@ -12,7 +12,12 @@ The gRPC Phonebook System for adding, getting, deleting and listing contacts
 └── contacts.json         # Generated data storage file
 ```
 
-## 2. Example Usage
+## 2. Usage
+Installing dependencies:
+```
+pip install -r requirements.txt
+```
+
 Add a contact:
 
 ```
