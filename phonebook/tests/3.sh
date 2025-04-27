@@ -17,7 +17,7 @@ echo "[1/5] Starting server..."
 python3 "$SERVER_FILE" &
 SERVER_PID=$!
 sleep 2
-fi
+
 
 cd ../client
 # Run both clients
