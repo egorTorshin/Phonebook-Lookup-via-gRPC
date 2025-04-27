@@ -30,21 +30,18 @@ echo -e "add TestUser 1234567890\nexit" | python3 "$CLIENT_FILE" || {
 sleep 1
 
 echo "[3/5] Getting test user..."
-python3 "$CLIENT_FILE" --command "get TestUser"
-if [ $? -ne 0 ]; then
+echo -e "get TestUser\nexit" | python3 "$CLIENT_FILE" || {
     echo "Failed to get contact"
     exit 1
-fi
+}
 
 sleep 1
 
 echo "[4/5] Listing users..."
-python3 "$CLIENT_FILE:" 
---command "list"
-if [ $? -ne 0 ]; then
+echo -e "list\nexit" | python3 "$CLIENT_FILE" || {
     echo "Failed to list contacts"
     exit 1
-fi
+}
 
 sleep 1
 
