@@ -9,8 +9,8 @@ sleep 2
 
 cd ../client
 python3 client.py &
-ADD_RESULT=$(add TestUser 1234567890)
-GET_RESULT=$(get TestUser 1234567890)
+ADD_RESULT=(add TestUser 1234567890)
+GET_RESULT=(get TestUser)
 
 if [[ $ADD_RESULT && $GET_RESULT ]]; then
     echo -e "\033[32mТест пройден\033[0m"
