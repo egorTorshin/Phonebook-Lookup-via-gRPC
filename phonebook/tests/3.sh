@@ -22,7 +22,7 @@ cd ../client
 # Тестирование
 echo "[2/5] Adding test user..."
 python3 "$CLIENT_FILE" &
---command "add TestUser 1"
+python3 --command "add TestUser 1"
 if [ $? -ne 0 ]; then
     echo "Failed to add contact"
     exit 1
