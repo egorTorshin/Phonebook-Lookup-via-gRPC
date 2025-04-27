@@ -20,7 +20,7 @@ START_TIME=$(date +%s)
 COMMANDS_FILE="load_commands.txt"
 echo -n "" > "$COMMANDS_FILE"
 
-for i in {1..100}; do
+for i in {1..50}; do
     echo "add LoadUser$i $i" >> "$COMMANDS_FILE"
 done
 echo "list" >> "$COMMANDS_FILE"
