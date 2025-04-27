@@ -7,12 +7,12 @@ python3 server.py &
 SERVER_PID=$!
 sleep 2
 
-cd ../../client
-
+cd ../client
+python3 client.py &
 # Функция для добавления контактов
 add_contacts() {
     for i in {1..50}; do
-        python3 client.py add "User$i" "$i" > /dev/null
+        add "User$i" "$i" > /dev/null
     done
 }
 
@@ -21,7 +21,7 @@ add_contacts &
 add_contacts &
 wait
 
-COUNT=$(python3 client.py list | grep -c "User")
+COUNT=(list | grep -c "User")
 
 if [ $COUNT -eq 100 ]; then
     echo -e "\033[32mКонкурентный тест пройден (100 контактов)\033[0m"
