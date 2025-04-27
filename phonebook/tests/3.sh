@@ -12,7 +12,7 @@ python3 client.py &
 # Функция для добавления контактов
 add_contacts() {
     for i in {1..50}; do
-        add "User$i" "$i" > /dev/null
+        > add User$i $i # > /dev/null
     done
 }
 
