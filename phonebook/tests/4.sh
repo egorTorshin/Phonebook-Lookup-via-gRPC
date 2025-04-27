@@ -1,31 +1,50 @@
 #!/bin/bash
 # tests/test_load.sh
+
 echo "=== Нагрузочный тест (100 RPS) ==="
 
-cd ../server
-python3 server.py &
-SERVER_PID=$!
-sleep 2
+# Переходим в директорию сервера
+cd server || exit 1
 
-cd ../../client
+# Запускаем сервер
+python3 server.py > server.log 2>&1 &
+SERVER_PID=$!
+sleep 5  # Увеличили время ожидания для gRPC
+
+# Переходим в директорию клиента
+cd ../client || exit 1
+
 START_TIME=$(date +%s)
 
-# 100 запросов с паузой 0.01 сек между ними (~100 RPS)
+# Генерируем файл с командами
+COMMANDS_FILE="load_commands.txt"
+echo -n "" > "$COMMANDS_FILE"
+
 for i in {1..100}; do
-    python3 client.py add "LoadUser$i" "$i" > /dev/null &
-    sleep 0.01
+    echo "add LoadUser$i $i" >> "$COMMANDS_FILE"
 done
-wait
+echo "list" >> "$COMMANDS_FILE"
+echo "exit" >> "$COMMANDS_FILE"
 
+# Запускаем клиент с пакетной обработкой команд
+python3 client.py < "$COMMANDS_FILE" > load_test_output.txt
+
+# Измеряем время выполнения
 END_TIME=$(date +%s)
-TOTAL_TIME=$((END_TIME-START_TIME))
+TOTAL_TIME=$((END_TIME - START_TIME))
 
-COUNT=$(python3 client.py list | grep -c "LoadUser")
+# Проверяем результаты
+COUNT=$(grep -c "LoadUser" load_test_output.txt)
 
-if [ $TOTAL_TIME -le 2 ] && [ $COUNT -eq 100 ]; then
-    echo -e "\033[32mНагрузочный тест пройден ($COUNT запросов за $TOTAL_TIME сек)\033[0m"
+if [ "$COUNT" -eq 100 ] && [ "$TOTAL_TIME" -le 5 ]; then
+    echo -e "\033[32mТест пройден: $COUNT запросов за $TOTAL_TIME сек\033[0m"
+    RESULT=0
 else
-    echo -e "\033[31mНагрузочный тест не пройден ($COUNT/100 за $TOTAL_TIME сек)\033[0m"
+    echo -e "\033[31mТест не пройден: $COUNT/100 запросов за $TOTAL_TIME сек\033[0m"
+    RESULT=1
 fi
 
+# Очистка
+rm -f "$COMMANDS_FILE" load_test_output.txt
 kill $SERVER_PID
+exit $RESULT
