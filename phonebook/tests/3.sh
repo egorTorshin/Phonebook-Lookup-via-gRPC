@@ -1,7 +1,6 @@
 #!/bin/bash
-cd ../server
-SERVER_FILE="server.py"
-CLIENT_FILE="../client/client.py"
+SERVER_FILE="server/server.py"
+CLIENT_FILE="client/client.py"
 
 # Cleanup on exit
 cleanup() {
