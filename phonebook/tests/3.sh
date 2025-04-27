@@ -23,19 +23,19 @@ cd ../client
 # Run both clients
 echo "[2/5] add test user..."
 python3 "$CLIENT_FILE" & 
-python3 --add TestUser 1 &
+python3 -c add TestUser 1 &
 CLIENT1_PID=$!
 
 sleep 2
 
 echo "[3/5] get test user..."
 python3 "$CLIENT_FILE" &
-python3 --get TestUser &
+python3 -c get TestUser &
 CLIENT2_PID=$!
 
 echo "[4/5] list users..."
 python3 "$CLIENT_FILE" &
-python3 --list &
+python3 -c list &
 CLIENT2_PID=$!
 
 # Wait for both clients to complete
