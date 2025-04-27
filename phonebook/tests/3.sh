@@ -21,9 +21,8 @@ sleep 5  # Увеличил время ожидания для gRPC сервер
 cd ../client
 # Тестирование
 echo "[2/5] Adding test user..."
-echo "[2/5] Adding test user..."
-python3 "$CLIENT_FILE" "add TestUser" 1234567890 || {
-    echo "Ошибка добавления контакта"
+echo -e "add TestUser 1234567890\nexit" | python3 "$CLIENT_FILE" || {
+    echo "Failed to add contact"
     exit 1
 }
 
