@@ -1,6 +1,5 @@
 #!/bin/bash
-cd ../server
-SERVER_FILE="server.py"
+SERVER_FILE="../server/server.py"
 CLIENT_FILE="../client/client.py"
 
 # Cleanup on exit
@@ -18,10 +17,9 @@ python3 "$SERVER_FILE" &
 SERVER_PID=$!
 sleep 5  # Увеличил время ожидания для gRPC сервера
 
-cd ../client
 # Тестирование
 echo "[2/5] Adding test user..."
-echo -e "add TestUser 1234567890\nexit" | python3 "$CLIENT_FILE" || {
+python3 "$CLIENT_FILE" | echo -e "add TestUser 1234567890\nexit"  || {
     echo "Failed to add contact"
     exit 1
 }
