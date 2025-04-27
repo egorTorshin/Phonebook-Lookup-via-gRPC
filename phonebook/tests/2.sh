@@ -1,7 +1,7 @@
 #!/bin/bash
-cd phonebook
-SERVER_FILE="server/server.py"
-CLIENT_FILE="client/client.py"
+cd ../server
+SERVER_FILE="server.py"
+CLIENT_FILE="client.py"
 
 # Cleanup on exit
 cleanup() {
@@ -23,7 +23,7 @@ if ! ps -p $SERVER_PID > /dev/null; then
     echo "❌ Server failed to start."
     exit 1
 fi
-
+cd ../client
 # Run both clients
 echo "[2/3] Running client..."
 python3 "$CLIENT_FILE" &
