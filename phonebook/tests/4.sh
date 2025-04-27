@@ -4,7 +4,7 @@
 echo "=== Нагрузочный тест (100 RPS) ==="
 
 # Переходим в директорию сервера
-cd server || exit 1
+cd ../server || exit 1
 
 # Запускаем сервер
 python3 server.py > server.log 2>&1 &
