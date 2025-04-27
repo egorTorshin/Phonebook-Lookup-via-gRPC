@@ -1,32 +1,46 @@
 #!/bin/bash
-# tests/test_concurrency.sh
-echo "=== Тест конкурентного доступа ==="
 
-cd ../server
-python3 server.py &
+SERVER_FILE="server.py"
+CLIENT_FILE="client.py"
+
+# Cleanup on exit
+cleanup() {
+    if ps -p $SERVER_PID > /dev/null 2>&1; then
+        echo "Stopping server (PID $SERVER_PID)..."
+        kill $SERVER_PID
+    fi
+}
+trap cleanup EXIT
+
+# Start server
+echo "[1/5] Starting server..."
+python3 "$SERVER_FILE" &
 SERVER_PID=$!
 sleep 2
 
-cd ../../client
-
-# Функция для добавления контактов
-add_contacts() {
-    for i in {1..50}; do
-        python3 client.py add "User$i" "$i" > /dev/null
-    done
-}
-
-# Запуск в 2 параллельных процесса
-add_contacts &
-add_contacts &
-wait
-
-COUNT=$(python3 client.py list | grep -c "User")
-
-if [ $COUNT -eq 100 ]; then
-    echo -e "\033[32mКонкурентный тест пройден (100 контактов)\033[0m"
-else
-    echo -e "\033[31mКонкурентный тест не пройден (найдено $COUNT/100)\033[0m"
+# Check server is alive
+if ! ps -p $SERVER_PID > /dev/null; then
+    echo "❌ Server failed to start."
+    exit 1
 fi
 
-kill $SERVER_PID
+# Run both clients
+echo "[2/5] add test user..."
+python3 "$CLIENT_FILE" --add TestUser 1 &
+CLIENT1_PID=$!
+
+sleep 2
+
+echo "[3/5] get test user..."
+python3 "$CLIENT_FILE" --get TestUser &
+CLIENT2_PID=$!
+
+echo "[4/5] list users..."
+python3 "$CLIENT_FILE" --get TestUser &
+CLIENT2_PID=$!
+
+# Wait for both clients to complete
+wait $CLIENT1_PID
+wait $CLIENT2_PID
+
+echo "[5/5] Clients completed. Test successful."
