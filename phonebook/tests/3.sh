@@ -30,7 +30,7 @@ echo -e "add TestUser 1234567890 \n exit" | python3 "$CLIENT_FILE" || {
 sleep 1
 
 echo "[3/5] Getting test user..."
-echo -e "get TestUser \n exit" | python3 "$CLIENT_FILE" || {
+echo -e "get TestUser" | python3 "$CLIENT_FILE" || {
     echo "Failed to get contact"
     exit 1
 }
