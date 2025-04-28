@@ -1,48 +1,55 @@
 #!/bin/bash
-cd ../server
-SERVER_FILE="server.py"
-CLIENT_FILE="../client/client.py"
+# tests/integration_test.sh
 
-# Cleanup on exit
+# Переходим в корень проекта
+cd "$(dirname "$0")/.." || exit 1
+
+# Создаем временные файлы в текущей директории
+TEST_COMMANDS="test_commands.txt"
+TEST_OUTPUT="test_output.txt"
+
 cleanup() {
-    if ps -p $SERVER_PID > /dev/null 2>&1; then
+    if ps -p $SERVER_PID > /dev/null; then
         echo "Stopping server (PID $SERVER_PID)..."
         kill $SERVER_PID
     fi
+    rm -f "$TEST_COMMANDS" "$TEST_OUTPUT"
 }
 trap cleanup EXIT
 
-# Start server
-echo "[1/5] Starting server..."
-python3 "$SERVER_FILE" &
+# 1. Запуск сервера
+echo "[1/4] Starting server..."
+cd server || exit 1
+python3 server.py &
 SERVER_PID=$!
-sleep 5  # Увеличил время ожидания для gRPC сервера
+sleep 5  # Ожидание инициализации gRPC
 
-cd ../client
-# Тестирование
-echo "[2/5] Adding test user..."
-echo -e "add TestUser 1234567890" | python3 "$CLIENT_FILE" || {
-    echo "Failed to add contact"
+# 2. Подготовка команд (в корне проекта)
+cd .. || exit 1
+echo "[2/4] Preparing test commands..."
+cat > "$TEST_COMMANDS" <<EOF
+add TestUser 1234567890
+get TestUser
+list
+delete TestUser
+exit
+EOF
+
+# 3. Выполнение тестов
+echo "[3/4] Running tests..."
+cd client || exit 1
+python3 client.py < "../$TEST_COMMANDS" > "../$TEST_OUTPUT" 2>&1
+
+# 4. Проверка результатов
+echo "[4/4] Verifying results..."
+cd .. || exit 1
+if grep -q "Contact TestUser added" "$TEST_OUTPUT" && \
+   grep -q "TestUser: 1234567890" "$TEST_OUTPUT" && \
+   grep -q "Contact TestUser deleted" "$TEST_OUTPUT"; then
+    echo "All tests passed successfully!"
+    exit 0
+else
+    echo "Test failed. Output:"
+    cat "$TEST_OUTPUT"
     exit 1
-}
-
-
-sleep 1
-
-echo "[3/5] Getting test user..."
-echo -e "> get TestUser" || {
-    echo "Failed to get contact"
-    exit 1
-}
-
-sleep 1
-
-echo "[4/5] Listing users..."
-echo -e "list \n exit" || {
-    echo "Failed to list contacts"
-    exit 1
-}
-
-sleep 1
-
-echo "[5/5] Test completed successfully"
+fi
