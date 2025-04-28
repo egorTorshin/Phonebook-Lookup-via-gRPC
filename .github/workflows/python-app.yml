@@ -35,11 +35,11 @@ jobs:
         cd phonebook/tests
         ./2.sh
 
-    - name: Run concurrency test
+    - name: Run command test
       run: |
         cd phonebook/tests
         ./3.sh
-    - name: Run test
+    - name: Run load test
       run: |
         cd phonebook/tests
         ./4.sh
