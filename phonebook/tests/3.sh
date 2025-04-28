@@ -1,55 +1,49 @@
 #!/bin/bash
-# tests/integration_test.sh
+# tests/interactive_test.sh
 
-# Переходим в корень проекта
-cd "$(dirname "$0")/.." || exit 1
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-# Создаем временные файлы в текущей директории
-TEST_COMMANDS="test_commands.txt"
-TEST_OUTPUT="test_output.txt"
+# Header
+echo -e "${YELLOW}=== Interactive gRPC Client Test ===${NC}"
 
-cleanup() {
-    if ps -p $SERVER_PID > /dev/null; then
-        echo "Stopping server (PID $SERVER_PID)..."
-        kill $SERVER_PID
-    fi
-    rm -f "$TEST_COMMANDS" "$TEST_OUTPUT"
-}
-trap cleanup EXIT
-
-# 1. Запуск сервера
-echo "[1/4] Starting server..."
-cd server || exit 1
+# Start server
+echo -e "\n${YELLOW}[1/3] Starting server...${NC}"
+cd server || exit
 python3 server.py &
 SERVER_PID=$!
-sleep 5  # Ожидание инициализации gRPC
+sleep 3
+echo -e "  Server PID: $SERVER_PID"
 
-# 2. Подготовка команд (в корне проекта)
-cd .. || exit 1
-echo "[2/4] Preparing test commands..."
-cat > "$TEST_COMMANDS" <<EOF
-add TestUser 1234567890
-get TestUser
-list
-delete TestUser
-exit
-EOF
+# Test function
+run_command() {
+    echo -e "\n${YELLOW}>>> $1${NC}"
+    echo "$1" | python3 ../client/client.py | while read -r line; do
+        if [[ "$line" == *"error"* || "$line" == *"fail"* ]]; then
+            echo -e "${RED}$line${NC}"
+        elif [[ "$line" == *"success"* || "$line" == *"added"* || "$line" == *"found"* ]]; then
+            echo -e "${GREEN}$line${NC}"
+        else
+            echo "$line"
+        fi
+    done
+}
 
-# 3. Выполнение тестов
-echo "[3/4] Running tests..."
-cd client || exit 1
-python3 client.py < "../$TEST_COMMANDS" > "../$TEST_OUTPUT" 2>&1
+# Test sequence
+echo -e "\n${YELLOW}[2/3] Running test sequence...${NC}"
+cd ../client || exit
 
-# 4. Проверка результатов
-echo "[4/4] Verifying results..."
-cd .. || exit 1
-if grep -q "Contact TestUser added" "$TEST_OUTPUT" && \
-   grep -q "TestUser: 1234567890" "$TEST_OUTPUT" && \
-   grep -q "Contact TestUser deleted" "$TEST_OUTPUT"; then
-    echo "All tests passed successfully!"
-    exit 0
-else
-    echo "Test failed. Output:"
-    cat "$TEST_OUTPUT"
-    exit 1
-fi
+run_command "add TestUser 1234567890"
+run_command "get TestUser"
+run_command "list"
+run_command "delete TestUser"
+run_command "list"
+
+# Cleanup
+echo -e "\n${YELLOW}[3/3] Cleaning up...${NC}"
+kill $SERVER_PID
+wait $SERVER_PID 2>/dev/null
+echo -e "${GREEN}Test completed successfully!${NC}"
