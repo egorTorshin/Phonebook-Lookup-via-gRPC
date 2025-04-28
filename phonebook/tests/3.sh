@@ -1,67 +1,48 @@
 #!/bin/bash
-# tests/interactive_session_test.sh
+cd "$(dirname "$0")/.." || exit 1
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+TEST_COMMANDS="test_commands.txt"
+TEST_OUTPUT="test_output.txt"
 
-echo -e "${YELLOW}=== Interactive gRPC Test Session ===${NC}"
+cleanup() {
+    if ps -p $SERVER_PID > /dev/null; then
+        echo "Stopping server (PID $SERVER_PID)..."
+        kill $SERVER_PID
+    fi
+    rm -f "$TEST_COMMANDS" "$TEST_OUTPUT"
+}
+trap cleanup EXIT
 
-# Start server
-echo -e "\n${YELLOW}[1/3] Starting server...${NC}"
-cd ../server || exit
+echo "[1/4] Starting server..."
+cd server || exit 1
 python3 server.py &
 SERVER_PID=$!
-sleep 3
-echo -e "  Server PID: $SERVER_PID"
+sleep 5 
 
-# Create named pipe for communication
-FIFO_FILE="/tmp/grpc_test_fifo"
-mkfifo "$FIFO_FILE"
+cd .. || exit 1
+echo "[2/4] Preparing test commands..."
+cat > "$TEST_COMMANDS" <<EOF
+add TestUser 1234567890
+get TestUser
+list
+delete TestUser
+exit
+EOF
 
-# Start client in background
-echo -e "\n${YELLOW}[2/3] Starting client session...${NC}"
-cd ../client || exit
-python3 client.py > "$FIFO_FILE" &
-CLIENT_PID=$!
-
-# Function to send commands
-send_command() {
-    echo "$1" > "$FIFO_FILE"
-    sleep 0.5 # Small delay for processing
-}
-
-# Read output with colors
-while read -r line; do
-    if [[ "$line" == *"> "* ]]; then
-        # Command prompts in yellow
-        echo -e "${YELLOW}$line${NC}"
-    elif [[ "$line" == *"added"* || "$line" == *"found"* || "$line" == *"success"* ]]; then
-        # Success messages in green
-        echo -e "${GREEN}$line${NC}"
-    elif [[ "$line" == *"not found"* || "$line" == *"error"* ]]; then
-        # Error messages in red
-        echo -e "${RED}$line${NC}"
-    else
-        # Regular output
-        echo "$line"
-    fi
-done < "$FIFO_FILE" &
-
-# Send test commands
-send_command "add TestUser 1234567890"
-send_command "get TestUser"
-send_command "list"
-send_command "delete TestUser"
-send_command "list"
-send_command "exit"
-
-# Cleanup
-echo -e "\n${YELLOW}[3/3] Cleaning up...${NC}"
-wait $CLIENT_PID
-rm "$FIFO_FILE"
-kill $SERVER_PID
-wait $SERVER_PID 2>/dev/null
-echo -e "${GREEN}Test completed!${NC}"
+echo "[3/4] Running tests..."
+cd client || exit 1
+python3 client.py < "../$TEST_COMMANDS" > "../$TEST_OUTPUT" 2>&1
+echo "$TEST_OUTPUT"
+cat "$TEST_OUTPUT"
+echo "[4/4] Verifying results..."
+cd .. || exit 1
+if grep -q "Contact TestUser added" "$TEST_OUTPUT" && \
+   grep -q "TestUser: 1234567890" "$TEST_OUTPUT" && \
+   grep -q "Contact TestUser deleted" "$TEST_OUTPUT"; then
+    echo "All tests passed successfully!"
+    exit 0
+else
+    echo "Test failed. Output:"
+    cat "$TEST_OUTPUT"
+    exit 1
+fi

@@ -1,5 +1,4 @@
 #!/bin/bash
-# tests/test_server_start.sh
 echo "=== Тест запуска сервера ==="
 
 cd ../server
@@ -8,10 +7,10 @@ SERVER_PID=$!
 sleep 2
 
 if ps -p $SERVER_PID > /dev/null; then
-    echo -e "\033[32mСервер успешно запущен\033[0m"
+    echo -e "\033[32mSercer started succesfully\033[0m"
     kill $SERVER_PID
     exit 0
 else
-    echo -e "\033[31mОшибка запуска сервера\033[0m"
+    echo -e "\033[31mError\033[0m"
     exit 1
 fi
