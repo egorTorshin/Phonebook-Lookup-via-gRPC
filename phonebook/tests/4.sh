@@ -28,7 +28,7 @@ TOTAL_TIME=$((END_TIME - START_TIME))
 COUNT=$(grep -c "LoadUser" load_test_output.txt)
 
 if [ "$COUNT" -eq 100 ] && [ "$TOTAL_TIME" -le 5 ]; then
-    echo -e "\033[32mTest passed: $COUNT requests $TOTAL_TIME sec\033[0m"
+    echo -e "\033[32mTest passed: $COUNT requests for $TOTAL_TIME sec\033[0m"
     RESULT=0
 else
     echo -e "\033[31mTest failed: $COUNT/100 requests for $TOTAL_TIME sec\033[0m"

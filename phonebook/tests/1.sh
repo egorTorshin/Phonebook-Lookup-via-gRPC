@@ -7,7 +7,7 @@ SERVER_PID=$!
 sleep 2
 
 if ps -p $SERVER_PID > /dev/null; then
-    echo -e "\033[32mSercer started succesfully\033[0m"
+    echo -e "\033[32mServer started succesfully\033[0m"
     kill $SERVER_PID
     exit 0
 else
