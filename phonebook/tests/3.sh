@@ -1,9 +1,9 @@
 #!/bin/bash
 # tests/integration_test.sh
 
-cd server
+cd ../server
 SERVER_FILE="server.py"
-CLIENT_FILE="../client/client.py"
+CLIENT_FILE="client.py"
 
 cleanup() {
     if ps -p $SERVER_PID > /dev/null; then
@@ -29,7 +29,7 @@ list
 delete TestUser
 exit
 EOF
-
+cd ../client
 # 3. Run client with all commands
 echo "[3/5] Running test sequence..."
 python3 "$CLIENT_FILE" < test_commands.txt > test_output.txt 2>&1
