@@ -32,8 +32,7 @@ EOF
 echo "[3/4] Running tests..."
 cd client || exit 1
 python3 client.py < "../$TEST_COMMANDS" > "../$TEST_OUTPUT" 2>&1
-echo "$TEST_OUTPUT"
-cat "$TEST_OUTPUT"
+cat "../$TEST_OUTPUT"
 echo "[4/4] Verifying results..."
 cd .. || exit 1
 if grep -q "Contact TestUser added" "$TEST_OUTPUT" && \
