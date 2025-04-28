@@ -12,7 +12,7 @@ echo -e "${YELLOW}=== Interactive gRPC Client Test ===${NC}"
 
 # Start server
 echo -e "\n${YELLOW}[1/3] Starting server...${NC}"
-cd server || exit
+cd ../server || exit
 python3 server.py &
 SERVER_PID=$!
 sleep 3
@@ -21,7 +21,7 @@ echo -e "  Server PID: $SERVER_PID"
 # Test function
 run_command() {
     echo -e "\n${YELLOW}>>> $1${NC}"
-    echo "$1" | python3 ../client/client.py | while read -r line; do
+    echo "$1" | python3 ../client.py | while read -r line; do
         if [[ "$line" == *"error"* || "$line" == *"fail"* ]]; then
             echo -e "${RED}$line${NC}"
         elif [[ "$line" == *"success"* || "$line" == *"added"* || "$line" == *"found"* ]]; then
