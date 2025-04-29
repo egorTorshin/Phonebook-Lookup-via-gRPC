@@ -28,6 +28,7 @@ In other:
 python client/client.py
 ```
 
+### Program commands
 Add a contact:
 
 ```
