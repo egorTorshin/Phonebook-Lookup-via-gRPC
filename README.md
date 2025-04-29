@@ -18,6 +18,16 @@ Installing dependencies:
 pip install -r requirements.txt
 ```
 
+In one terminal you should run:
+```
+python server/server.py
+```
+
+In other:
+```
+python client/client.py
+```
+
 Add a contact:
 
 ```
