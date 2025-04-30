@@ -1,30 +1,43 @@
-syntax='proto3';
+syntax = 'proto3';
 
 package phonebook;
 
+// Phonebook service
 service Phonebook {
+  // adds a contact
   rpc AddContact (Contact) returns (Response);
+
+  // looks up a contact by name
   rpc GetContact (Name) returns (Contact);
+
+  // deletes a contact
   rpc DeleteContact (Name) returns (Response);
+
+  // lists all contacts
   rpc ListContacts (Empty) returns (ContactList);
 }
 
+// contact
 message Contact {
-  string name = 1;
-  string number = 2;
+  string name = 1;      // contact's name
+  string number = 2;    // contact's number
 }
 
+// name
 message Name {
-  string name = 1;
+  string name = 1;  
 }
 
+// generic response
 message Response {
-  string status = 1;
-  string message = 2;
+  string status = 1;    // esuccess or error  status
+  string message = 2;   
 }
 
+// list of contacts
 message ContactList {
-  repeated Contact contacts = 1;
+  repeated Contact contacts = 1;  
 }
 
+// empty message
 message Empty {}
